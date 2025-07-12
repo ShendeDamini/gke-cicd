@@ -9,7 +9,7 @@ manifests:
     - ./kubernetes/*
 deploy:
   kubectl: {
-    kubeContext: gke_cicd-first_us-central1-c_cluster-1
+    kubeContext: gke_cicd-first_us-central1_cluster-1
     }
   logs:
     prefix: container
@@ -17,7 +17,7 @@ deploy:
 profiles:
   - name: prod
     activation:
-      - kubeContext: gke_cicd-first_us-central1-c_cluster-2
+      - kubeContext: gke_cicd-first_us-central1_cluster-2
     deploy:
       kubectl:
-        kubeContext: gke_cicd-first_us-central1-c_cluster-2
+        kubeContext: gke_cicd-first_us-central1_cluster-2
