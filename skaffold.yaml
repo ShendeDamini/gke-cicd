@@ -1,12 +1,15 @@
 apiVersion: skaffold/v4beta9
 kind: Config
+metadata:
+  name: multi-cluster-deployment
 build:
   tagPolicy:
     gitCommit: {}
   local: {}
 manifests:
   rawYaml:
-    - ./kubernetes/*
+    - ./kubernetes/app1.yaml
+    - ./kubernetes/app2.yaml
 deploy:
   kubectl: {
     kubeContext: gke_cicd-first_us-central1_cluster-1
