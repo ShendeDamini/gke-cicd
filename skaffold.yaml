@@ -8,6 +8,16 @@ manifests:
   rawYaml:
     - ./kubernetes/*
 deploy:
-  kubectl: {}
+  kubectl: {
+    kubeContext: gke_cicd-first_us-central1-c_cluster-1
+    }
   logs:
     prefix: container
+
+profiles:
+  - name: prod
+    activation:
+      - kubeContext: gke_cicd-first_us-central1-c_cluster-2
+    deploy:
+      kubectl:
+        kubeContext: gke_cicd-first_us-central1-c_cluster-2
