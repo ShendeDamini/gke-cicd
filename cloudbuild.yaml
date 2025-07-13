@@ -17,6 +17,14 @@ steps:
   waitFor: ['build-app2']
   args: ['push', 'us-central1-docker.pkg.dev/my-devops-cicd/gke-cicd-new/flask-image' ]
 
+- name: 'gcr.io/cloud-builders/gsutil'
+  id: 'debug-list-manifests'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - 'ls -l ./kubernetes'
+  waitFor: ['push-app1', 'push-app2']
+
 - name: 'google/cloud-sdk:latest'
   id: 'deploy-release'
   waitFor: ['push-app1', 'push-app2']
