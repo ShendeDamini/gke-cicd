@@ -6,5 +6,4 @@ metadata:
   labels: {}
 description: dev
 gke:
-  cluster: projects/cicd-first/locations/us-central1/clusters/cluster-1
-
+  cluster: projects/my-devops-cicd/locations/us-central1/clusters/gke-cluster-1
