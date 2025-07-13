@@ -1,37 +1,73 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
+  id: 'build-app1'
   args: ['build', '-t', 'us-central1-docker.pkg.dev/my-devops-cicd/gke-cicd-new/quickstart-image', './app1' ]
-  id: 'Build Docker Image'
-
-  # images:
-  # - 'us-central1-docker.pkg.dev/<your_project_id>/gke-repo/quickstart-image'
 
 - name: 'gcr.io/cloud-builders/docker'
+  id: 'push-app1'
+  waitFor: ['build-app1']
   args: ['push', 'us-central1-docker.pkg.dev/my-devops-cicd/gke-cicd-new/quickstart-image' ]
-  id: 'Push Docker Image'
 
 - name: 'gcr.io/cloud-builders/docker'
+  id: 'build-app2'
   args: ['build', '-t', 'us-central1-docker.pkg.dev/my-devops-cicd/gke-cicd-new/flask-image', './app2' ]
-  id: 'Build Docker Image2'
-
-  # images:
-  # - 'us-central1-docker.pkg.dev/<your_project_id>/gke-repo/quickstart-image'
 
 - name: 'gcr.io/cloud-builders/docker'
+  id: 'push-app2'
+  waitFor: ['build-app2']
   args: ['push', 'us-central1-docker.pkg.dev/my-devops-cicd/gke-cicd-new/flask-image' ]
-  id: 'Push Docker Image2'
-
 
 - name: 'google/cloud-sdk:latest'
+  id: 'deploy-release'
+  waitFor: ['push-app1', 'push-app2']
   entrypoint: 'sh'
   args:
-  - -xe
-  - -c
-  - |
-    gcloud deploy apply --file deploy/pipeline.yaml --region=us-central1
-    gcloud deploy apply --file deploy/dev.yaml --region=us-central1
-    gcloud deploy apply --file deploy/prod.yaml --region=us-central1
-    gcloud deploy releases create "app-release-${SHORT_SHA}-$(date +%s)" --delivery-pipeline=gke-cicd-pipeline-first --region=us-central1 --from-k8s-manifest=./kubernetes/app1.yaml --from-k8s-manifest=./kubernetes/app2.yaml
+    - -xe
+    - -c
+    - |
+      gcloud deploy apply --file deploy/pipeline.yaml --region=us-central1
+      gcloud deploy apply --file deploy/dev.yaml --region=us-central1
+      gcloud deploy apply --file deploy/prod.yaml --region=us-central1
+      gcloud deploy releases create "app-release-${SHORT_SHA}-$(date +%s)" \
+        --delivery-pipeline=gke-cicd-pipeline-first \
+        --region=us-central1 \
+        --from-k8s-manifest=./kubernetes/app1.yaml \
+        --from-k8s-manifest=./kubernetes/app2.yaml
 
-options:
-  logging: CLOUD_LOGGING_ONLY
+
+#- name: 'gcr.io/cloud-builders/docker'
+#  args: ['build', '-t', 'us-central1-docker.pkg.dev/my-devops-cicd/gke-cicd-new/quickstart-image', './app1' ]
+#  id: 'Build Docker Image'
+
+#  # images:
+#  # - 'us-central1-docker.pkg.dev/<your_project_id>/gke-repo/quickstart-image'
+
+#- name: 'gcr.io/cloud-builders/docker'
+#  args: ['push', 'us-central1-docker.pkg.dev/my-devops-cicd/gke-cicd-new/quickstart-image' ]
+#  id: 'Push Docker Image'
+
+#- name: 'gcr.io/cloud-builders/docker'
+#  args: ['build', '-t', 'us-central1-docker.pkg.dev/my-devops-cicd/gke-cicd-new/flask-image', './app2' ]
+#  id: 'Build Docker Image2'
+
+#  # images:
+#  # - 'us-central1-docker.pkg.dev/<your_project_id>/gke-repo/quickstart-image'
+
+#- name: 'gcr.io/cloud-builders/docker'
+#  args: ['push', 'us-central1-docker.pkg.dev/my-devops-cicd/gke-cicd-new/flask-image' ]
+#  id: 'Push Docker Image2'
+
+
+#- name: 'google/cloud-sdk:latest'
+#  entrypoint: 'sh'
+#  args:
+#  - -xe
+#  - -c
+#  - |
+#    gcloud deploy apply --file deploy/pipeline.yaml --region=us-central1
+#    gcloud deploy apply --file deploy/dev.yaml --region=us-central1
+#    gcloud deploy apply --file deploy/prod.yaml --region=us-central1
+#    gcloud deploy releases create "app-release-${SHORT_SHA}-$(date +%s)" --delivery-pipeline=gke-cicd-pipeline-first --region=us-central1 --from-k8s-manifest=./kubernetes/app1.yaml --from-k8s-manifest=./kubernetes/app2.yaml
+
+#options:
+#  logging: CLOUD_LOGGING_ONLY
