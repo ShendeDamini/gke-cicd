@@ -11,9 +11,11 @@ manifests:
     - ./kubernetes/app1.yaml
     - ./kubernetes/app2.yaml
 deploy:
-  kubectl: {
-    kubeContext: gke_my-devops-cicd_us-central1_gke-cluster-1
-    }
+  kubeContext: gke_my-devops-cicd_us-central1_gke-cluster-1
+  kubectl:
+    manifests:
+      - ./kubernetes/app1.yaml
+      - ./kubernetes/app2.yaml
   logs:
     prefix: container
 
@@ -22,5 +24,8 @@ profiles:
     activation:
       - kubeContext: gke_my-devops-cicd_us-central1_gke-cluster-2
     deploy:
+      kubeContext: gke_my-devops-cicd_us-central1_gke-cluster-2
       kubectl:
-        kubeContext: gke_my-devops-cicd_us-central1_gke-cluster-2
+        manifests:
+          - ./kubernetes/app1.yaml
+          - ./kubernetes/app2.yaml
