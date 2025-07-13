@@ -34,3 +34,5 @@ steps:
         --from-k8s-manifest=./kubernetes/app1.yaml \
         --from-k8s-manifest=./kubernetes/app2.yaml
 
+options:
+  logging: CLOUD_LOGGING_ONLY
